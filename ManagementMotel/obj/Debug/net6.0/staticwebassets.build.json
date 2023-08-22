@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "Bwn5Da0TDUfHLLjnGJjBh4VH5A9KJuzfNoOvNlDZelY=",
+  "Hash": "L0S9KiDmn+N2KszUmf7es1rr7amQrrlbRh+8hOmMMwY=",
   "Source": "ManagementMotel",
   "BasePath": "_content/ManagementMotel",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "ManagementMotel\\wwwroot",
+      "Source": "ManagementMotel",
+      "ContentRoot": "E:\\MyProject\\ManagementMotel\\ManagementMotel\\wwwroot\\",
+      "BasePath": "_content/ManagementMotel",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

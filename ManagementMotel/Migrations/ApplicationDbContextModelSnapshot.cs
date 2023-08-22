@@ -79,6 +79,9 @@ namespace ManagementMotel.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<int>("UserDetailId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -93,7 +96,55 @@ namespace ManagementMotel.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("UserDetailId")
+                        .IsUnique();
+
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("ManagementMotel.Models.UserDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CCCD")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ImageAfterCCCD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePreviousCCCD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MobilePhone")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserDetails");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -229,6 +280,17 @@ namespace ManagementMotel.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ManagementMotel.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("ManagementMotel.Models.UserDetail", "UserDetail")
+                        .WithOne("User")
+                        .HasForeignKey("ManagementMotel.Models.ApplicationUser", "UserDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserDetail");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -278,6 +340,11 @@ namespace ManagementMotel.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ManagementMotel.Models.UserDetail", b =>
+                {
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

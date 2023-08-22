@@ -7,5 +7,7 @@ namespace ManagementMotel.Models
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExprityTime { get; set; }
         public string? ResetPasswordToken { get; set; }
+        public int UserDetailId { get; set; }
+        public UserDetail UserDetail { get; set; }
     }
 }

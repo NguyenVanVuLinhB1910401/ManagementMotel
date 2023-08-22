@@ -1,4 +1,5 @@
-﻿using ManagementMotel.DTOs;
+﻿using AutoMapper;
+using ManagementMotel.DTOs;
 using ManagementMotel.Helpers;
 using ManagementMotel.Interfaces;
 using ManagementMotel.Models;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -21,12 +23,15 @@ namespace ManagementMotel.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
-
-        public AuthenticateController(IUnitOfWork unitOfWork, IConfiguration configuration, IEmailService emailService)
+        private readonly IFileService _fileService;
+        private IMapper Mapper { get; }
+        public AuthenticateController(IUnitOfWork unitOfWork, IConfiguration configuration, IEmailService emailService, IMapper mapper, IFileService fileService)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _emailService = emailService;
+            this.Mapper = mapper;
+            _fileService = fileService;
         }
 
         [HttpPost]
@@ -148,19 +153,19 @@ namespace ManagementMotel.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto model)
+        public async Task<IActionResult> Register([FromForm] RegisterDto model)
         {
             return await RegisterUser(model, new string[] { UserRoles.Employee });
         }
 
         [HttpPost]
         [Route("register-admin")]
-        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterDto model)
+        public async Task<IActionResult> RegisterAdmin([FromForm] RegisterDto model)
         {
             return await RegisterUser(model, new string[] { UserRoles.Admin, UserRoles.Employee });
         }
 
-        private async Task<IActionResult> RegisterUser([FromBody] RegisterDto model, string[] roles)
+        private async Task<IActionResult> RegisterUser([FromForm] RegisterDto model, string[] roles)
         {
             var userExists = await _unitOfWork.UserManager.FindByNameAsync(model.Username);
             if (userExists != null)
@@ -169,26 +174,43 @@ namespace ManagementMotel.Controllers
             if (emailExists != null)
                 return StatusCode(StatusCodes.Status409Conflict, new { Status = "Error", Message = "Email already exists!" });
 
-            ApplicationUser user = new ApplicationUser()
+            //ApplicationUser user = new ApplicationUser()
+            //{
+            //    Email = model.Email,
+            //    SecurityStamp = Guid.NewGuid().ToString(),
+            //    UserName = model.Username,
+            //};
+            _unitOfWork.BeginTransaction();
+            try
             {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username,
-            };
-            var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+                UserDetail userDetail = Mapper.Map<UserDetail>(model);
+                await _unitOfWork.UserDetail.Add(userDetail);
+                _unitOfWork.Complete();
+                
+                ApplicationUser user = Mapper.Map<ApplicationUser>(model);
+                user.UserDetailId = userDetail.Id;
+                var result = await _unitOfWork.UserManager.CreateAsync(user, model.Password);
+                if (!result.Succeeded)
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+                await _fileService.uploadFile(model.ImagePreviousCCCD);
+                await _fileService.uploadFile(model.ImageAfterCCCD);
+                foreach (var role in roles)
+                {
+                    if (!await _unitOfWork.RoleManager.RoleExistsAsync(role))
+                        await _unitOfWork.RoleManager.CreateAsync(new IdentityRole(role));
 
-            foreach (var role in roles)
-            {
-                if (!await _unitOfWork.RoleManager.RoleExistsAsync(role))
-                    await _unitOfWork.RoleManager.CreateAsync(new IdentityRole(role));
-
-                if (await _unitOfWork.RoleManager.RoleExistsAsync(role))
-                    await _unitOfWork.UserManager.AddToRoleAsync(user, role);
+                    if (await _unitOfWork.RoleManager.RoleExistsAsync(role))
+                        await _unitOfWork.UserManager.AddToRoleAsync(user, role);
+                }
+                _unitOfWork.CommitTransaction();
+                return Ok(new { Status = "Success", Message = "User created successfully!" });
             }
-
-            return Ok(new { Status = "Success", Message = "User created successfully!" });
+            catch(Exception ex)
+            {
+                _unitOfWork.RollbackTransaction();
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            
         }
 
         [HttpPost("send-reset-email/{email}")]

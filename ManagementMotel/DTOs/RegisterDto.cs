@@ -19,20 +19,24 @@ namespace ManagementMotel.DTOs
         public string? FirstName { get; set; }
 
         [Required(ErrorMessage = "LastName is required")]
-        [MaxLength(20)]
+        [MaxLength(50)]
         public string? LastName { get; set; }
 
+        [Required(ErrorMessage = "CCCD is required")]
+        [MaxLength(12)]
         public string? CCCD { get; set; }
 
-        public DateTime? DateOfBirth { get; set; }
-
+        [Required(ErrorMessage = "Address is required")]
         public string? Address { get; set; }
 
-        public int Gender { get; set; }
-
+        [Required(ErrorMessage = "MobilePhone is required")]
         [MaxLength(12)]
         public string? MobilePhone { get; set; }
 
-        public string? Location { get; set; }
+        [Required(ErrorMessage = "ImagePreviousCCCD is required")]
+        public IFormFile ImagePreviousCCCD { get; set; }
+
+        [Required(ErrorMessage = "ImageAfterCCCD is required")]
+        public IFormFile ImageAfterCCCD { get; set; }
     }
 }

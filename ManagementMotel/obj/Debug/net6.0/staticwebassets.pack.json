@@ -1,0 +1,29 @@
+{
+  "Files": [
+    {
+      "Id": "E:\\MyProject\\ManagementMotel\\ManagementMotel\\wwwroot\\uploads\\anh-3d-thien-nhien-001_71f9d790-5d34-4245-af35-f232987995e7.jpg",
+      "PackagePath": "staticwebassets\\uploads\\anh-3d-thien-nhien-001_71f9d790-5d34-4245-af35-f232987995e7.jpg"
+    },
+    {
+      "Id": "E:\\MyProject\\ManagementMotel\\ManagementMotel\\wwwroot\\uploads\\images_c04766fb-aa16-4876-9d84-1d51e9aac84a.jpg",
+      "PackagePath": "staticwebassets\\uploads\\images_c04766fb-aa16-4876-9d84-1d51e9aac84a.jpg"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.ManagementMotel.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.build.ManagementMotel.props",
+      "PackagePath": "build\\ManagementMotel.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildMultiTargeting.ManagementMotel.props",
+      "PackagePath": "buildMultiTargeting\\ManagementMotel.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildTransitive.ManagementMotel.props",
+      "PackagePath": "buildTransitive\\ManagementMotel.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

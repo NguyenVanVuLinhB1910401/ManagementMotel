@@ -3,6 +3,7 @@ using ManagementMotel.Models;
 using ManagementMotel.Repositories;
 using ManagementMotel.UtilityServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -14,9 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConnStr")));
 
+builder.Services.AddTransient<IUserDetailRepository, UserDetailRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-
+builder.Services.AddScoped<IFileService, FileService>();
 // For Identity  
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -63,6 +65,17 @@ builder.Services.AddCors(option =>
         .AllowAnyHeader();
     });
 });
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = int.MaxValue;
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = int.MaxValue;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -73,8 +86,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseCors("MyPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -7,9 +7,11 @@ namespace ManagementMotel.Interfaces
     {
         UserManager<ApplicationUser> UserManager { get; }
         RoleManager<IdentityRole> RoleManager { get; }
-        //IEquipmentTypeRepository EquipmentTypes { get; }
-        //IEquipmentRepository Equipments { get; }
-        //IAssignmentEquipmentRepository AssignmentEquipments { get; }
+        IUserDetailRepository UserDetail { get; }
+
         int Complete();
+        void BeginTransaction();
+        void CommitTransaction();
+        void RollbackTransaction();
     }
 }

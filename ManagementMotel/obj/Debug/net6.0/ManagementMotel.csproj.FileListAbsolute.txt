@@ -77,3 +77,4 @@ E:\MyProject\ManagementMotel\ManagementMotel\obj\Debug\net6.0\refint\ManagementM
 E:\MyProject\ManagementMotel\ManagementMotel\obj\Debug\net6.0\ManagementMotel.pdb
 E:\MyProject\ManagementMotel\ManagementMotel\obj\Debug\net6.0\ManagementMotel.genruntimeconfig.cache
 E:\MyProject\ManagementMotel\ManagementMotel\obj\Debug\net6.0\ref\ManagementMotel.dll
+E:\MyProject\ManagementMotel\ManagementMotel\bin\Debug\net6.0\ManagementMotel.staticwebassets.runtime.json
